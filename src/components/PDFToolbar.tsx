@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Tool } from '@/pages/Index';
 import { toast } from '@/hooks/use-toast';
+import PDFEditor from './PDFEditor';
 import { PDFDocument, rgb } from 'pdf-lib';
 
 interface PDFToolbarProps {
@@ -247,59 +247,6 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({ tool, files, onFileProcessed })
     }
   };
 
-  const handleEditPDF = async () => {
-    if (files.length === 0 || files[0].type !== 'application/pdf') {
-      toast({
-        title: "Error",
-        description: "Please upload a PDF file to edit",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setProcessing(true);
-    try {
-      const file = files[0];
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      
-      // Add sample text annotation
-      const pages = pdfDoc.getPages();
-      const firstPage = pages[0];
-      
-      firstPage.drawText('Sample Edit - Text Added by PDF Forge', {
-        x: 50,
-        y: firstPage.getHeight() - 50,
-        size: 12,
-        color: rgb(1, 0, 0),
-      });
-
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-
-      onFileProcessed({
-        name: `${file.name.replace('.pdf', '')}_edited.pdf`,
-        url,
-        blob
-      });
-
-      toast({
-        title: "PDF Edited Successfully",
-        description: "Sample text has been added to the document",
-      });
-    } catch (error) {
-      console.error('Edit error:', error);
-      toast({
-        title: "Edit Failed",
-        description: "An error occurred while editing the PDF",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   const renderToolControls = () => {
     switch (tool) {
       case 'split':
@@ -388,15 +335,26 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({ tool, files, onFileProcessed })
       case 'edit':
         return (
           <div className="space-y-4">
-            <div>
-              <Label>Edit Options</Label>
-              <p className="text-xs text-gray-500 mb-2">
-                Basic editing features (more advanced features coming soon)
-              </p>
-            </div>
-            <Button onClick={handleEditPDF} disabled={processing} className="w-full">
-              {processing ? 'Processing...' : 'Add Sample Text'}
-            </Button>
+            {files.length > 0 && files[0].type === 'application/pdf' ? (
+              <PDFEditor
+                file={files[0]}
+                onFileProcessed={onFileProcessed}
+              />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4">Please upload a PDF file to start editing</p>
+                <div className="text-sm text-gray-400">
+                  <p>Advanced editing tools include:</p>
+                  <ul className="mt-2 space-y-1">
+                    <li>• Add custom text with font styling</li>
+                    <li>• Insert shapes and lines</li>
+                    <li>• Add highlights and annotations</li>
+                    <li>• Rotate and crop pages</li>
+                    <li>• Precise positioning controls</li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         );
 
