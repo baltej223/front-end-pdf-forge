@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas as FabricCanvas, FabricText, Rect, Circle, Path, FabricImage } from 'fabric';
 import { PDFDocument } from 'pdf-lib';
@@ -249,10 +250,9 @@ const PDFCanvas: React.FC<PDFCanvasProps> = ({
     fabricCanvas.add(text);
     fabricCanvas.setActiveObject(text);
     
-    // For Fabric.js v6, use textEditingManager to enter editing mode
-    if (fabricCanvas.textEditingManager) {
-      fabricCanvas.textEditingManager.editObject(text);
-    }
+    // In Fabric.js v6, text editing is handled automatically when double-clicking
+    // We'll just add the text and let the user double-click to edit it
+    fabricCanvas.renderAll();
   };
 
   return (
