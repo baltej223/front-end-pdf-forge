@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Upload, FileText, Scissors, Merge, Image, Compress, Edit3 } from 'lucide-react';
+import { Upload, FileText, Scissors, Merge, Image, Minimize2, Edit3 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import FileUploader from '@/components/FileUploader';
@@ -44,7 +44,7 @@ const Index = () => {
       id: 'compress' as Tool,
       name: 'Compress PDF',
       description: 'Reduce file size while maintaining quality',
-      icon: Compress,
+      icon: Minimize2,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50 hover:bg-orange-100',
     },
