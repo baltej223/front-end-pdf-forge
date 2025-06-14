@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas as FabricCanvas, FabricText, Rect, Circle, Path, FabricImage } from 'fabric';
 import { PDFDocument } from 'pdf-lib';
@@ -250,9 +249,9 @@ const PDFCanvas: React.FC<PDFCanvasProps> = ({
     fabricCanvas.add(text);
     fabricCanvas.setActiveObject(text);
     
-    // For Fabric.js v6, use editingManager to enter editing mode
-    if (fabricCanvas.editingManager) {
-      fabricCanvas.editingManager.editObject(text);
+    // For Fabric.js v6, use textEditingManager to enter editing mode
+    if (fabricCanvas.textEditingManager) {
+      fabricCanvas.textEditingManager.editObject(text);
     }
   };
 

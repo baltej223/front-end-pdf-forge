@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -158,54 +157,54 @@ const PDFEditor: React.FC<PDFEditorProps> = ({ file, onFileProcessed }) => {
   };
 
   return (
-    <div className="flex h-[600px] bg-gray-50 rounded-lg overflow-hidden">
-      {/* Tool Panel */}
-      <PDFToolPanel
-        activeTool={activeTool}
-        onToolChange={setActiveTool}
-        toolSettings={toolSettings}
-        onSettingsChange={setToolSettings}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        onClear={handleClear}
-        onSave={handleSave}
-        canUndo={canUndo}
-        canRedo={canRedo}
-      />
-
-      {/* Main Canvas Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Page Navigation */}
-        <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium">
-              Page {currentPage + 1} of {totalPages}
-            </span>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === 0}
-                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === totalPages - 1}
-                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-          <div className="text-sm text-gray-600">
-            Tool: <span className="font-medium capitalize">{activeTool}</span>
+    <div className="h-full w-full bg-gray-50 rounded-lg overflow-hidden flex flex-col">
+      {/* Page Navigation Header */}
+      <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium">
+            Page {currentPage + 1} of {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 0}
+              onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === totalPages - 1}
+              onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+            >
+              Next
+            </Button>
           </div>
         </div>
+        <div className="text-sm text-gray-600">
+          Tool: <span className="font-medium capitalize">{activeTool}</span>
+        </div>
+      </div>
 
-        {/* Canvas */}
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Tool Panel - Left Side */}
+        <PDFToolPanel
+          activeTool={activeTool}
+          onToolChange={setActiveTool}
+          toolSettings={toolSettings}
+          onSettingsChange={setToolSettings}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
+          onClear={handleClear}
+          onSave={handleSave}
+          canUndo={canUndo}
+          canRedo={canRedo}
+        />
+
+        {/* Canvas - Right Side */}
         <PDFCanvas
           pdfFile={file}
           currentPage={currentPage}
