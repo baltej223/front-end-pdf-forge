@@ -1,6 +1,6 @@
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Canvas as FabricCanvas, FabricText, Rect, Circle, Path } from 'fabric';
+import { Canvas as FabricCanvas, FabricText, Rect, Circle, Path, FabricImage } from 'fabric';
 import { PDFDocument } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import { toast } from '@/hooks/use-toast';
@@ -98,9 +98,20 @@ const PDFCanvas: React.FC<PDFCanvasProps> = ({
 
       // Convert to fabric image and set as background
       const dataURL = tempCanvas.toDataURL();
-      fabricCanvas.setBackgroundImage(dataURL, fabricCanvas.renderAll.bind(fabricCanvas), {
-        scaleX: fabricCanvas.width! / viewport.width,
-        scaleY: fabricCanvas.height! / viewport.height,
+      
+      // Use FabricImage.fromURL for Fabric.js v6
+      FabricImage.fromURL(dataURL).then((img) => {
+        img.set({
+          scaleX: fabricCanvas.width! / viewport.width,
+          scaleY: fabricCanvas.height! / viewport.height,
+          selectable: false,
+          evented: false,
+        });
+        
+        // Set as background by adding to canvas and sending to back
+        fabricCanvas.add(img);
+        fabricCanvas.sendObjectToBack(img);
+        fabricCanvas.renderAll();
       });
 
     } catch (error) {
@@ -129,8 +140,10 @@ const PDFCanvas: React.FC<PDFCanvasProps> = ({
         break;
       case 'draw':
         fabricCanvas.isDrawingMode = true;
-        fabricCanvas.freeDrawingBrush.color = toolSettings.color || '#000000';
-        fabricCanvas.freeDrawingBrush.width = toolSettings.strokeWidth || 2;
+        if (fabricCanvas.freeDrawingBrush) {
+          fabricCanvas.freeDrawingBrush.color = toolSettings.color || '#000000';
+          fabricCanvas.freeDrawingBrush.width = toolSettings.strokeWidth || 2;
+        }
         break;
       case 'rectangle':
       case 'circle':
@@ -236,7 +249,11 @@ const PDFCanvas: React.FC<PDFCanvasProps> = ({
 
     fabricCanvas.add(text);
     fabricCanvas.setActiveObject(text);
-    text.enterEditing();
+    
+    // For Fabric.js v6, use editingManager to enter editing mode
+    if (fabricCanvas.editingManager) {
+      fabricCanvas.editingManager.editObject(text);
+    }
   };
 
   return (
